@@ -28,7 +28,7 @@ class SentenceScreenFitting {
                 wc++;
             }
             if(wc - i <=0) return null; //if wc doesn't increase anymore, wc will be soon caught up by i 
-            arr[i] = wc -i; //////////////////////
+            arr[i] = wc -i; ///////////////////////
             col_index -= 1+sentence[i].length(); //////////
 
         }
