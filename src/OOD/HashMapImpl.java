@@ -1,7 +1,5 @@
 package OOD;
 
-import java.util.ArrayList;
-import java.util.List;
 
 public class HashMapImpl implements HashMap {
     Bucket[] hashTable;
