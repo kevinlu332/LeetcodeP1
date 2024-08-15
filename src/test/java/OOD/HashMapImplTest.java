@@ -5,29 +5,52 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-
-public class HashMapImplTest {
+class HashMapImplTest {
     private HashMapImpl<String, Integer> hashMap;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         hashMap = new HashMapImpl<>();
     }
 
     @Test
-    public void testPutAndGet() {
+    void testPut() {
         hashMap.put("apple", 1);
         hashMap.put("banana", 2);
         hashMap.put("cherry", 3);
 
-        assertEquals(Integer.valueOf(1), hashMap.get("apple"));
-        assertEquals(Integer.valueOf(2), hashMap.get("banana"));
-        assertEquals(Integer.valueOf(3), hashMap.get("cherry"));
+        assertEquals(1, hashMap.get("apple"));
+        assertEquals(2, hashMap.get("banana"));
+        assertEquals(3, hashMap.get("cherry"));
+    }
+
+    @Test
+    void testPutNullKey() {
+        hashMap.put(null, 1);
+        assertNull(hashMap.get(null));
+    }
+
+    @Test
+    void testPutOverwriteExistingKey() {
+        hashMap.put("apple", 1);
+        hashMap.put("apple", 2);
+        assertEquals(2, hashMap.get("apple"));
+    }
+
+    @Test
+    void testGet() {
+        hashMap.put("apple", 1);
+        hashMap.put("banana", 2);
+        hashMap.put("cherry", 3);
+
+        assertEquals(1, hashMap.get("apple"));
+        assertEquals(2, hashMap.get("banana"));
+        assertEquals(3, hashMap.get("cherry"));
         assertNull(hashMap.get("orange"));
     }
 
     @Test
-    public void testDelete() {
+    void testDelete() {
         hashMap.put("apple", 1);
         hashMap.put("banana", 2);
         hashMap.put("cherry", 3);
@@ -35,32 +58,33 @@ public class HashMapImplTest {
         hashMap.delete("banana");
 
         assertNull(hashMap.get("banana"));
-        assertEquals(Integer.valueOf(1), hashMap.get("apple"));
-        assertEquals(Integer.valueOf(3), hashMap.get("cherry"));
+        assertEquals(1, hashMap.get("apple"));
+        assertEquals(3, hashMap.get("cherry"));
     }
 
     @Test
-    public void testNullKey() {
-        hashMap.put(null, 1); // Should not add null key
-        assertNull(hashMap.get(null));
+    void testDeleteNullKey() {
+        hashMap.put("apple", 1);
+        hashMap.delete(null);
+        assertEquals(1, hashMap.get("apple"));
     }
 
     @Test
-    public void testResize() {
-        // Add enough elements to trigger resizing
+    void testRehash() {
+        int initialCapacity = hashMap.getHashTableCapacity();
         for (int i = 0; i < 10; i++) {
             hashMap.put("key" + i, i);
         }
 
-        // Check that all elements are still accessible
+        assertTrue(initialCapacity < hashMap.getHashTableCapacity());
+
         for (int i = 0; i < 10; i++) {
-            assertEquals(Integer.valueOf(i), hashMap.get("key" + i));
+            assertEquals(i, hashMap.get("key" + i));
         }
     }
 
     @Test
-    public void testHashFunction() {
-        // Test the hash function with different keys
+    void testHash() {
         String key1 = "apple";
         String key2 = "banana";
         String key3 = "cherry";
@@ -75,55 +99,28 @@ public class HashMapImplTest {
     }
 
     @Test
-    void testContainsKey_NullKey() {
+    void testContainsKey() {
+        hashMap.put("apple", 1);
+        hashMap.put("banana", 2);
+        hashMap.put("cherry", 3);
+
+        assertTrue(hashMap.containsKey("apple"));
+        assertTrue(hashMap.containsKey("banana"));
+        assertTrue(hashMap.containsKey("cherry"));
+        assertFalse(hashMap.containsKey("orange"));
         assertFalse(hashMap.containsKey(null));
     }
 
     @Test
-    void testContainsKey_EmptyHashMap() {
-        assertFalse(hashMap.containsKey("apple"));
-    }
+    void testIsOver75PercentCapacity() {
+        assertFalse(hashMap.isOver75PercentCapacity());
 
-    @Test
-    void testContainsKey_KeyPresent() {
-        hashMap.put("apple", 1);
-        hashMap.put("banana", 2);
-        hashMap.put("cherry", 3);
+        for (int i = 0; i < 6; i++) {
+            hashMap.put("key" + i, i);
+        }
+        assertFalse(hashMap.isOver75PercentCapacity());
 
-        assertTrue(hashMap.containsKey("apple"));
-        assertTrue(hashMap.containsKey("banana"));
-        assertTrue(hashMap.containsKey("cherry"));
-    }
-
-    @Test
-    void testContainsKey_KeyNotPresent() {
-        hashMap.put("apple", 1);
-        hashMap.put("banana", 2);
-        hashMap.put("cherry", 3);
-
-        assertFalse(hashMap.containsKey("orange"));
-    }
-
-    @Test
-    void testContainsKey_DuplicateKeys() {
-        hashMap.put("apple", 1);
-        hashMap.put("banana", 2);
-        hashMap.put("apple", 3); // Duplicate key
-
-        assertTrue(hashMap.containsKey("apple"));
-        assertTrue(hashMap.containsKey("banana"));
-    }
-
-    @Test
-    void testContainsKey_AfterDelete() {
-        hashMap.put("apple", 1);
-        hashMap.put("banana", 2);
-        hashMap.put("cherry", 3);
-
-        hashMap.delete("banana");
-
-        assertFalse(hashMap.containsKey("banana"));
-        assertTrue(hashMap.containsKey("apple"));
-        assertTrue(hashMap.containsKey("cherry"));
+        hashMap.put("key6", 6);
+        assertEquals(16, hashMap.getHashTableCapacity());
     }
 }
