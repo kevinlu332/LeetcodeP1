@@ -1,7 +1,7 @@
 package OOD;
 
-public interface HashMap {
-    public void put(String key, String value);
-    public String get(String key);
-    public void delete(String key);
+public interface HashMap<K,V> {
+    public void put(K key, V value);
+    public V get(K key);
+    public void delete(K key);
 }

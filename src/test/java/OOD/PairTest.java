@@ -1,13 +1,14 @@
-package test.test.OOD;
+package OOD;
 
-import OOD.Pair;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 //This class contains unit tests for the Pair class
 //class created via the asking to Amazon Q for unit test generation and comments generation.
 class PairTest {
+    private Pair<String,Integer> pair;
 
     //This test case checks if the constructor of the Pair class initializes the k and v fields correctly
     @Test
